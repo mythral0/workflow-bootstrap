@@ -1,0 +1,54 @@
+{
+  "name": "@mythral0/workflow-bootstrap",
+  "version": "0.1.0",
+  "description": "Generate tested GitHub Actions and GitOps workflows from an existing repository",
+  "type": "module",
+  "bin": {
+    "workflow-bootstrap": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "prebuild": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "tsc -p tsconfig.json",
+    "check": "npm run build && npm run test && npm run pack:check",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "pack:check": "npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "github-actions",
+    "gitops",
+    "workflow",
+    "bootstrap",
+    "docker",
+    "helm"
+  ],
+  "author": "mythral0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mythral0/workflow-bootstrap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mythral0/workflow-bootstrap/issues"
+  },
+  "homepage": "https://github.com/mythral0/workflow-bootstrap#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
+}
