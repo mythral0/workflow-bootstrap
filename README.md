@@ -68,7 +68,13 @@ with different component layouts receive different build matrices.
 - GHCR for the initial `0.x` container workflow
 - A GitOps controller watching the configured branch for deployment
 
+## Package releases
+
+The `release.yml` GitHub Actions workflow publishes npm releases through npm
+trusted publishing with short-lived OIDC credentials. It requires the trusted
+publisher to match `mythral0/workflow-bootstrap`, workflow `release.yml`, and
+GitHub environment `npm`. No npm token is stored in GitHub.
+
 ## License
 
 MIT
-
