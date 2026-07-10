@@ -42,12 +42,30 @@ jobs:
       - name: Create checksum
         working-directory: release
         run: sha256sum "${{ matrix.asset }}" > "${{ matrix.asset }}.sha256"
+      - name: Prepare portable release assets
+        if: ${{ matrix.asset == 'workflow-bootstrap-linux-x64' }}
+        run: |
+          cp bin/workflow-bootstrap.cjs release/workflow-bootstrap.cjs
+          VERSION="$(node -p "require('./package.json').version")"
+          printf '%s\n' "$VERSION" > release/workflow-bootstrap.version
+          cd release
+          sha256sum workflow-bootstrap.cjs > workflow-bootstrap.cjs.sha256
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.asset }}
           path: |
             release/${{ matrix.asset }}
             release/${{ matrix.asset }}.sha256
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/upload-artifact@v7
+        if: ${{ matrix.asset == 'workflow-bootstrap-linux-x64' }}
+        with:
+          name: workflow-bootstrap-portable
+          path: |
+            release/workflow-bootstrap.cjs
+            release/workflow-bootstrap.cjs.sha256
+            release/workflow-bootstrap.version
           if-no-files-found: error
           retention-days: 1
 
@@ -70,6 +88,9 @@ jobs:
             release/workflow-bootstrap-linux-x64.sha256 \
             release/workflow-bootstrap-linux-arm64 \
             release/workflow-bootstrap-linux-arm64.sha256 \
+            release/workflow-bootstrap.cjs \
+            release/workflow-bootstrap.cjs.sha256 \
+            release/workflow-bootstrap.version \
             --repo "$GITHUB_REPOSITORY" \
             --verify-tag \
             --generate-notes \

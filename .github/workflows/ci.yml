@@ -20,6 +20,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+      - run: scripts/test-installer.sh
       - name: Smoke test standalone executable
         run: |
           set -euo pipefail

@@ -7999,7 +7999,7 @@ function renderFiles(config) {
 }
 
 // src/version.ts
-var VERSION = "0.3.0";
+var VERSION = "0.4.0";
 
 // src/cli.ts
 function parseOptions(args) {
