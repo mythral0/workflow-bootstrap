@@ -1,25 +1,16 @@
 {
-  "name": "@mythral0/workflow-bootstrap",
-  "version": "0.1.1",
+  "name": "workflow-bootstrap",
+  "version": "0.2.0",
+  "private": true,
   "description": "Generate tested GitHub Actions and GitOps workflows from an existing repository",
   "type": "module",
-  "bin": {
-    "workflow-bootstrap": "dist/cli.js"
-  },
-  "files": [
-    "dist",
-    "LICENSE",
-    "README.md"
-  ],
   "scripts": {
     "prebuild": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
-    "build": "tsc -p tsconfig.json",
-    "postbuild": "node -e \"require('node:fs').chmodSync('dist/cli.js', 0o755)\"",
-    "prepack": "npm run build",
-    "check": "npm run build && npm run test && npm run pack:check",
+    "build": "tsc -p tsconfig.json && esbuild src/cli.ts --bundle --platform=node --format=cjs --target=node20 --outfile=bin/workflow-bootstrap.cjs",
+    "postbuild": "node -e \"require('node:fs').chmodSync('bin/workflow-bootstrap.cjs', 0o755)\"",
+    "check": "npm run build && npm run test",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "pack:check": "npm pack --dry-run"
+    "test:coverage": "vitest run --coverage"
   },
   "engines": {
     "node": ">=20"
@@ -42,14 +33,12 @@
     "url": "https://github.com/mythral0/workflow-bootstrap/issues"
   },
   "homepage": "https://github.com/mythral0/workflow-bootstrap#readme",
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
     "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
+    "esbuild": "^0.28.1",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   }

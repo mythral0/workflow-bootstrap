@@ -7,6 +7,7 @@ import { loadConfig } from "./config.js";
 import { detectProject } from "./detect.js";
 import { writeGeneratedFiles } from "./files.js";
 import { renderFiles } from "./render.js";
+import { VERSION } from "./version.js";
 
 interface Options {
   yes: boolean;
@@ -14,10 +15,6 @@ interface Options {
   dryRun: boolean;
   root: string;
 }
-
-const packageMetadata = JSON.parse(
-  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
-) as { version: string };
 
 function parseOptions(args: string[]): Options {
   let root = process.cwd();
@@ -109,7 +106,7 @@ async function main(): Promise<void> {
   const [command = "help", ...args] = process.argv.slice(2);
   if (command === "-h" || command === "--help" || command === "help") return help();
   if (command === "-v" || command === "--version") {
-    console.log(packageMetadata.version);
+    console.log(VERSION);
     return;
   }
   if (command === "init") return init(args);

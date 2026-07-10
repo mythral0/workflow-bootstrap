@@ -20,5 +20,11 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
-      - run: npm pack --dry-run
-
+      - name: Smoke test standalone executable
+        run: |
+          set -euo pipefail
+          bin/workflow-bootstrap.cjs --version
+          mkdir -p tmp/ci-smoke
+          git -C tmp/ci-smoke init -q -b main
+          bin/workflow-bootstrap.cjs init tmp/ci-smoke --yes
+          bin/workflow-bootstrap.cjs check tmp/ci-smoke

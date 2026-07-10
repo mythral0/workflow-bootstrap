@@ -6,6 +6,7 @@ import { loadConfig } from "../src/config.js";
 import { detectProject } from "../src/detect.js";
 import { writeGeneratedFiles } from "../src/files.js";
 import { renderFiles } from "../src/render.js";
+import { VERSION } from "../src/version.js";
 
 const sandbox = join(process.cwd(), "tmp", "tests");
 
@@ -95,8 +96,10 @@ FROM deps AS worker
 });
 
 describe("generation", () => {
-  test("the compiled package binary is executable", () => {
-    expect(statSync(join(process.cwd(), "dist", "cli.js")).mode & 0o111).not.toBe(0);
+  test("the standalone binary is executable and versioned", () => {
+    expect(statSync(join(process.cwd(), "bin", "workflow-bootstrap.cjs")).mode & 0o111).not.toBe(0);
+    const metadata = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as { version: string };
+    expect(VERSION).toBe(metadata.version);
   });
 
   test("writes parseable workflows and reloads the manifest", () => {

@@ -1,25 +1,42 @@
-name: Publish package
+name: Release executable
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
 
 permissions:
-  contents: read
-  id-token: write
+  contents: write
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
-    environment: npm
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          registry-url: https://registry.npmjs.org/
           package-manager-cache: false
       - run: npm ci
-      - run: npm run build
-      - run: npm test
-      - run: npm publish --access public
+      - run: npm run check
+      - name: Validate release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          if [[ "$GITHUB_REF_NAME" != "v${VERSION}" ]]; then
+            echo "Tag $GITHUB_REF_NAME does not match package version v${VERSION}." >&2
+            exit 1
+          fi
+      - name: Create checksum
+        run: cd bin && sha256sum workflow-bootstrap.cjs > workflow-bootstrap.cjs.sha256
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            bin/workflow-bootstrap.cjs \
+            bin/workflow-bootstrap.cjs.sha256 \
+            --verify-tag \
+            --generate-notes \
+            --title "workflow-bootstrap $GITHUB_REF_NAME"
