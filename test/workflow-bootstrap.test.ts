@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { parse as parseYaml } from "yaml";
@@ -95,6 +95,10 @@ FROM deps AS worker
 });
 
 describe("generation", () => {
+  test("the compiled package binary is executable", () => {
+    expect(statSync(join(process.cwd(), "dist", "cli.js")).mode & 0o111).not.toBe(0);
+  });
+
   test("writes parseable workflows and reloads the manifest", () => {
     const root = fixture("shipping");
     write(root, "package.json", JSON.stringify({ scripts: { test: "node --test" } }));
@@ -139,4 +143,3 @@ describe("generation", () => {
     expect(second.unchanged).toHaveLength(files.length);
   });
 });
-
